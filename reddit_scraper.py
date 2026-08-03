@@ -45,6 +45,12 @@ __version__ = "1.0.0"
 # ============================================================
 API_KEY = os.environ.get("BRIGHT_DATA_API_KEY", "")
 
+
+def set_api_key(key: str) -> None:
+    """Set the API key at runtime (useful when importing as a library)."""
+    global API_KEY
+    API_KEY = key
+
 # Bright Data dataset IDs (verified from Bright Data dashboard).
 POSTS_DATASET_ID = "gd_lvz8ah06191smkebj4"       # Reddit - Posts
 COMMENTS_DATASET_ID = "gd_lvzdpsdlw09j6t702"     # Reddit - Comments
@@ -419,7 +425,7 @@ def _parse_keyword_rows(
         raw_num = cell(row, "num_of_posts", "num_posts", "posts", "limit")
         if raw_num:
             parsed = parse_int(raw_num)
-            if parsed:
+            if parsed is not None:
                 num_posts = parsed
         inputs.append({"keyword": keyword, "num_of_posts": num_posts})
     return inputs
@@ -494,6 +500,7 @@ def poll_until_ready(snapshot_id: str) -> None:
     Raises:
         RuntimeError: If the collection fails/cancels.
         TimeoutError: If it exceeds POLL_TIMEOUT.
+        HTTPError: On non-retryable HTTP errors (401, 403, 400).
     """
     url = f"{BASE_URL}/progress/{snapshot_id}"
     start = time.time()
@@ -501,9 +508,18 @@ def poll_until_ready(snapshot_id: str) -> None:
     while time.time() - start < POLL_TIMEOUT:
         try:
             resp = api_request("GET", url)
-        except (HTTPError, URLError) as e:
+        except HTTPError as e:
+            if e.code in (401, 403, 400):
+                log(f"  Non-retryable HTTP error ({e.code}); raising immediately.")
+                raise
             if time.time() - start < POLL_TIMEOUT:
-                log(f"  Transient error (will retry): {type(e).__name__}")
+                log(f"  Transient HTTP {e.code} error (will retry): {type(e).__name__}")
+                time.sleep(POLL_INTERVAL)
+                continue
+            raise
+        except URLError as e:
+            if time.time() - start < POLL_TIMEOUT:
+                log(f"  Transient network error (will retry): {type(e).__name__}")
                 time.sleep(POLL_INTERVAL)
                 continue
             raise

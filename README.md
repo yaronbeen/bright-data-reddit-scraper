@@ -17,6 +17,8 @@ Extract **Reddit data** - posts, comments, and user profiles - with a single, de
 
 ---
 
+> **Free tier:** Every Bright Data account includes 5,000 free credits per month (~$7.50 value). Credits reset monthly and you don't need a credit card to start.
+
 ## Quickstart
 
 ```bash
@@ -199,7 +201,7 @@ Field names are mapped defensively: `user_posted` becomes `author`, `community_n
 Need fields this scraper does not include, or want to scrape a Reddit page layout not covered here? **[Scraper Studio](https://docs.brightdata.com/datasets/scraper-studio/ai-agent)** lets you build a custom Reddit scraper with plain-English prompts:
 
 1. Describe the data you want ("scrape top 100 posts from r/technology with title, upvotes, author karma, and all top-level comments")
-2. Scraper Studio generates a self-healing scraper with your exact schema
+2. Scraper Studio generates a scraper with your exact schema (user-triggered self-healing: when the target site changes, you describe the fix in plain English, review the AI-generated diff, and ship a patch in up to ~15 minutes)
 3. Proxies, unblocking, and CAPTCHA handling are built in
 
 No code required. Useful when you need a non-standard output schema or want to combine Reddit data with other sources in a single pipeline.
@@ -225,8 +227,8 @@ Bright Data **Web Scraper API** pricing (from [brightdata.com/pricing/web-scrape
 | Plan | Price | Notes |
 |------|-------|-------|
 | Free tier | **5,000 records/month** | No credit card required |
-| Pay as you go | **$1.5 / 1k records** | Pay only for successfully delivered records |
-| Scale | **$499/mo** | 384k records included, then $1.3 / 1k |
+| Pay as you go | **from $1.00 / 1K records** | Pay only for successfully delivered records |
+| Scale | **$499/mo** | 384k records included, then lower per-record rate. Verify current pricing at [brightdata.com/pricing](https://brightdata.com/pricing) |
 
 You pay per **delivered record**, so the built-in 5-subreddit sample costs only a few cents. Pricing changes; always confirm on the pricing page.
 
@@ -234,14 +236,14 @@ You pay per **delivered record**, so the built-in 5-subreddit sample costs only 
 
 ## Bright Data vs. Apify for Reddit - an honest comparison
 
-The most-used Reddit scraper on the Apify store is [`trudax/reddit-scraper-lite`](https://apify.com/trudax/reddit-scraper-lite) (**33K users**, 4.6 stars, community-maintained by "Trudax"). Here is a straight comparison, verified from both vendors' live pages at time of writing.
+The most-used Reddit scraper on the Apify store is [`trudax/reddit-scraper-lite`](https://apify.com/trudax/reddit-scraper-lite) (community-maintained by "Trudax"). Here is a straight comparison, verified from both vendors' live pages at time of writing.
 
 | | Bright Data (this repo) | Apify `trudax/reddit-scraper-lite` |
 |---|---|---|
 | **Maintained by** | Bright Data (the vendor) | Trudax (third-party dev), community-maintained |
-| **Base price** | **$1.5 / 1k records** (down to $1.3/1k on Scale) | Apify platform pricing + compute units |
+| **Base price** | **from $1.00 / 1K records** (lower on Scale plan) | **$3.40 / 1K results** (per-result pricing) |
 | **Free tier** | 5,000 records / month, no card | Yes (Apify free plan) |
-| **Billing model** | Flat per delivered record; pay only for success | Per compute unit consumed |
+| **Billing model** | Flat per delivered record; pay only for success | Per result delivered |
 | **Posts** | Yes (from subreddits or keyword search) | Yes |
 | **Comments** | Yes (separate dataset, `gd_lvzdpsdlw09j6t702`) | Yes |
 | **User profiles** | Yes (separate dataset, `gd_mgnh0p8w16o65lmhp`) | Limited |
@@ -262,4 +264,4 @@ The most-used Reddit scraper on the Apify store is [`trudax/reddit-scraper-lite`
 
 [MIT](./LICENSE) - free to use, modify, and distribute.
 
-Built by the team at **[Bright Data](https://brightdata.com)**. An open, runnable example of the Bright Data Reddit Scraper API.
+An open-source project using the **[Bright Data](https://brightdata.com)** Web Scraper API.
