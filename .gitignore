@@ -1,5 +1,10 @@
 output_*.csv
+output_*.json
+example_*.csv
+example_*.json
 *.env
+venv/
+.venv/
 __pycache__/
 .DS_Store
 .ruff_cache/

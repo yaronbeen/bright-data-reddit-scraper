@@ -1,10 +1,12 @@
-"""E2E tests against the live Bright Data API for Reddit posts."""
+"""E2E tests against the live Bright Data API for Reddit."""
 
-import os, sys
+import os
+import sys
+
 import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import reddit_post_scraper as scraper
+import reddit_scraper as rs
 from tests.conftest import skip_no_api_key
 
 
@@ -12,21 +14,33 @@ from tests.conftest import skip_no_api_key
 class TestRedditE2E:
     @skip_no_api_key
     def test_api_key_valid(self):
+        """Confirm the API key is accepted (not 401/403)."""
         try:
-            scraper.api_request("GET", f"{scraper.BASE_URL}/progress/fake_id")
+            rs.api_request("GET", f"{rs.BASE_URL}/progress/fake_id")
         except Exception as e:
             assert "401" not in str(e)
 
     @skip_no_api_key
     def test_subreddit_scrape(self):
+        """Collect posts from r/python and verify structure."""
         inputs = [{"url": "https://www.reddit.com/r/python/"}]
-        sid = scraper.trigger_collection(
-            scraper.POSTS_DATASET_ID, inputs, discover_by="subreddit_url"
+        raw = rs.collect(
+            inputs, rs.POSTS_DATASET_ID, discover_by="subreddit_url",
         )
-        assert sid
-        scraper.poll_until_ready(sid)
-        results = scraper.download_snapshot(sid)
-        assert results and len(results) >= 1
-        post = results[0]
+        assert raw and len(raw) >= 1
+        post = raw[0]
         assert isinstance(post, dict)
         assert post.get("title") or post.get("url")
+
+    @skip_no_api_key
+    def test_parse_live_post(self):
+        """Parse a live post and verify the field mapping is correct."""
+        inputs = [{"url": "https://www.reddit.com/r/python/"}]
+        raw = rs.collect(
+            inputs, rs.POSTS_DATASET_ID, discover_by="subreddit_url",
+        )
+        assert raw
+        row = rs.parse_post(raw[0])
+        assert row["post_url"] or row["title"], (
+            "Live post should have at least a URL or title"
+        )
